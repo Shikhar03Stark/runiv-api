@@ -33,14 +33,8 @@ module.exports = db.sequelize.define('link',{
         defaultValue: "ACTIVE",
         allowNull: true,
     },
-    metrics: {
+    metric_id: {
         type: db.dataTypes.UUID,
-        allowNull: false,
-        onDelete: 'CASCADE',
-        references: {
-            model: 'metric',
-            key: 'id',
-        }
     }
 },
     {

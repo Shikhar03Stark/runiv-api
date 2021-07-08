@@ -1,4 +1,4 @@
-const User = require('../database/models/User');
+const models = require('../database').model;
 const util = require('../middlewares/util');
 
 module.exports = {
@@ -22,7 +22,7 @@ module.exports = {
                 return;
             }
 
-            const user = await User.findOne({
+            const user = await models.user.findOne({
                 where: {
                     email: email,
                 }
@@ -49,7 +49,7 @@ module.exports = {
                 dob: dob || null,
             };
 
-            const new_user = await User.create(user_obj);
+            const new_user = await models.user.create(user_obj);
             const jwt_token = await util.issue_jwt(new_user);
 
             const data = {
@@ -96,7 +96,7 @@ module.exports = {
                 return;
             }
 
-            const user = await User.findOne({
+            const user = await models.user.findOne({
                 where:{
                     email: email,
                 }
@@ -164,12 +164,26 @@ module.exports = {
             }
 
             const new_obj = {};
+            if(alias && alias != req.user.alias){
+                if(alias) new_obj.alias = alias;
+                const check_alias = await models.user.findOne({
+                    where: {
+                        alias: alias,
+                    }
+                });
+                if(check_alias){
+                    res.status(400).json({
+                        ok: false,
+                        message: `Alias already exists`,
+                    });
+                    return;
+                }
+            }
             if(name) new_obj.name = name;
             if(gender) new_obj.gender = gender;
             if(dob) new_obj.dob = dob;
-            if(alias) new_obj.alias = alias;
 
-            const updated_user = await User.update(new_obj, {
+            const updated_user = await models.user.update(new_obj, {
                 where: {
                     id: req.user.id,
                 }
@@ -211,7 +225,7 @@ module.exports = {
                 return ;
             }
 
-            await User.destroy({
+            await models.user.destroy({
                 where: {
                     id: id,
                 }

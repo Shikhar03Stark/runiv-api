@@ -8,6 +8,9 @@ module.exports = db.sequelize.define('metric',{
         defaultValue: db.dataTypes.UUIDV4,
         primaryKey: true,
     },
+    link_id: {
+        type: db.dataTypes.UUID,
+    },
     timestamps: {
         type: db.dataTypes.ARRAY(db.dataTypes.DATE),
     }

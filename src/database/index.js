@@ -7,14 +7,16 @@ model.user.hasMany(model.link, {
 });
 model.link.belongsTo(model.user, {
     foreignKey: 'owner',
+    constraints: false,
 });
 
 model.link.hasOne(model.metric, {
-    foreignKey: 'id',
-});
+    foreignKey: 'link_id',
+})
+
 model.metric.belongsTo(model.link, {
-    foreignKey: 'metrics'
-});
+    foreignKey: 'link_id',
+})
 
 module.exports = {
     init: init,

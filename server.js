@@ -46,7 +46,15 @@ app.use((req, res, next) => {
 (async () => {
     const db = require('./src/database/init');
     await db.connect();
-    await db.sequelize.sync();
+    if(process.env.NODE_ENV === 'development'){
+        await db.sequelize.sync({
+            alter: true,
+            force: true,
+        })
+    }
+    else{
+        await db.sequelize.sync();
+    }
 })()
 
 app.listen(PORT, () => {
