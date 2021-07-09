@@ -46,6 +46,16 @@ module.exports = {
                 return;
             }
 
+            const circular = util.detect_circular(destination);
+
+            if(circular.isCircular){
+                res.status(400).json({
+                    ok: false,
+                    messae: circular.reason,
+                });
+                return;
+            }
+
             const metric = await models.metric.create();
             const new_link = await models.link.create({
                 owner: req.user.id,
@@ -118,6 +128,14 @@ module.exports = {
                 }
             });
 
+            if(!detailed_link){
+                res.status(400).json({
+                    ok: false,
+                    link: `Slug not found`,
+                })
+                return;
+            }
+
             res.status(200).json({
                 ok: true,
                 link: detailed_link,
@@ -155,12 +173,20 @@ module.exports = {
                 }
             });
             //console.dir(detailed_link.getDataValue('updated_at'), {depth:4});
+            if(!detailed_link){
+                res.status(400).json({
+                    ok: false,
+                    link: `Slug not found`,
+                })
+                return;
+            }
+
             const response = {
                 owner_id: detailed_link.owner,
                 slug,
                 timestamps: detailed_link.metric.timestamps,
                 redirects: detailed_link.redirects,
-                last_access: detailed_link.getDataValue('updated_at'),
+                last_access: detailed_link.metric.getDataValue('updated_at'),
             };
 
             res.status(200).json(response);
@@ -221,6 +247,16 @@ module.exports = {
                 }
             }
 
+            const circular = util.detect_circular(destination);
+
+            if(circular.isCircular){
+                res.status(400).json({
+                    ok: false,
+                    messae: circular.reason,
+                });
+                return;
+            }
+
             const count = await models.link.update(update_obj, {
                 where: {
                     slug: selected_slug,
@@ -250,6 +286,41 @@ module.exports = {
     },
 
     remove_link: async (req, res, next) => {
+        try {
+            const id = req.body.id;
+            if(!id){
+                res.status(403).json({
+                    ok: false,
+                    message: `link 'id' field is required`,
+                });
+                return;
+            }
 
+            const link = await models.link.findByPk(id);
+
+            if(!link || id != link.id || link.owner != req.user.id){
+                res.status(403).json({
+                    ok: false,
+                    messae: `link doesn't exists`,
+                });
+                return ;
+            }
+
+            await models.link.destroy({
+                where: {
+                    id: id,
+                }
+            });
+
+            res.status(200).json({
+                ok: true,
+            });
+        } catch (error) {
+            console.log(error);
+            next({
+                status: 500,
+                message: `Internal server error`,
+            })
+        }
     }
 }

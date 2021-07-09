@@ -100,5 +100,24 @@ module.exports = {
             valid: true,
             reason: null,
         }
+    },
+
+    detect_circular: (url, also_check_slug = null) => {
+        const Url = new URL(url);
+        //console.log(Url.origin, Url.pathname, Url.protocol, Url.hostname, Url.href);
+        const host = Url.hostname;
+        const host_re = /runiv.in$/i;
+        const host_match = host_re.test(host);
+        if(host_match){
+            return {
+                isCircular: true,
+                reason: `Destination url can not point to *runiv.in/*`
+            }
+        }
+
+        return {
+            isCircular: false,
+            reason: null,
+        }
     }
 }
