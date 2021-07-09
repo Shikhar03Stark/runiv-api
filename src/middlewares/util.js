@@ -57,7 +57,7 @@ module.exports = {
             }
         }
 
-        const re = /^[a-zA-Z0-9-*_]/;
+        const re = /^[a-zA-Z0-9-*_]*$/;
         const match = re.test(slug);
         if(!match){
             return{

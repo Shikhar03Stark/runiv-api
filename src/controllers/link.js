@@ -159,8 +159,8 @@ module.exports = {
                 owner_id: detailed_link.owner,
                 slug,
                 timestamps: detailed_link.metric.timestamps,
-                last_access: detailed_link.getDataValue('updated_at'),
                 redirects: detailed_link.redirects,
+                last_access: detailed_link.getDataValue('updated_at'),
             };
 
             res.status(200).json(response);
@@ -173,5 +173,83 @@ module.exports = {
                 message: `Internal server error`,
             })
         }
+    },
+
+    update: async (req, res, next) => {
+        try {
+            const selected_slug = req.params.slug;
+
+            const slug = req.body.slug;
+            const destination = req.body.destination;
+            const status = req.body.status;
+
+            const update_obj = {};
+            if(slug){
+                const valid = util.validate_slug(slug);
+                if(!valid.valid){
+                    res.status(400).json({
+                        ok: false,
+                        message: valid.reason,
+                    });
+                    return;
+                }
+                update_obj.slug = slug;
+            }
+
+            if(destination){
+                const valid = util.validate_url(destination);
+                if(!valid.valid){
+                    res.status(400).json({
+                        ok: false,
+                        message: valid.reason,
+                    });
+                    return;
+                }
+                update_obj.destination = destination;
+            }
+
+            if(status){
+                if(status == 'ACTIVE' || status == 'INACTIVE' || status == 'DISABLED'){
+                    update_obj.status = status;
+                }
+                else{
+                    res.status(400).json({
+                        ok: false,
+                        message: `Status can be ACTIVE. INACTIVE, DISABLED`,
+                    })
+                    return;
+                }
+            }
+
+            const count = await models.link.update(update_obj, {
+                where: {
+                    slug: selected_slug,
+                    owner: req.user.id,
+                }
+            });
+
+            if(count[0] > 0){
+                res.status(200).json({
+                    ok: true,
+                });
+            }
+            else{
+                res.status(400).json({
+                    ok:false,
+                    message: `link not found`,
+                })
+            }
+
+        } catch (error) {
+            console.log(error);
+            next({
+                status: 500,
+                message: `Internal server error`,
+            })
+        }
+    },
+
+    remove_link: async (req, res, next) => {
+
     }
 }

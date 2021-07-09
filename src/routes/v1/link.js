@@ -7,5 +7,7 @@ router.post('/new', ctrl.new_link);
 router.get('/all', ctrl.all_links);
 router.get('/detail/:slug', ctrl.details);
 router.get('/metric/:slug', ctrl.get_metrics);
+router.put('/update/:slug', ctrl.update);
+router.delete('/remove', ctrl.remove_link);
 
 module.exports = router;
