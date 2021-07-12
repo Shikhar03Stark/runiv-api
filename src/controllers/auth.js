@@ -1,5 +1,6 @@
 const models = require('../database').model;
 const util = require('../middlewares/util');
+const rc = require('../database/redis');
 
 module.exports = {
     signup: async (req, res, next) => {
@@ -178,6 +179,20 @@ module.exports = {
                     });
                     return;
                 }
+                
+                rc.SCAN(0, 'MATCH', `${req.user.alias}:*`, (err, data) => {
+                    if(err){
+                        next({
+                            status: 500,
+                            messae: `Error connecting to redis`
+                        })
+                        return;
+                    }
+                    const keys = data[1];
+                    if(keys.length > 0){
+                        rc.DEL(...keys);
+                    }
+                })
             }
             if(name) new_obj.name = name;
             if(gender) new_obj.gender = gender;

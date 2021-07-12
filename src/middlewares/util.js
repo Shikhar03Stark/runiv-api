@@ -103,6 +103,8 @@ module.exports = {
     },
 
     detect_circular: (url, also_check_slug = null) => {
+        const re = /^(https?:\/\/)/;
+        if(!re.test(url)) url = 'http://'+url;
         const Url = new URL(url);
         //console.log(Url.origin, Url.pathname, Url.protocol, Url.hostname, Url.href);
         const host = Url.hostname;

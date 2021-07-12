@@ -1,5 +1,6 @@
 const models = require('../database').model;
 const util = require('../middlewares/util');
+const rc = require('../database/redis');
 
 module.exports = {
     new_link: async (req, res, next) => {
@@ -232,6 +233,15 @@ module.exports = {
                     return;
                 }
                 update_obj.destination = destination;
+                
+                const circular = util.detect_circular(destination);
+                if(circular.isCircular){
+                    res.status(400).json({
+                        ok: false,
+                        messae: circular.reason,
+                    });
+                    return;
+                }
             }
 
             if(status){
@@ -247,15 +257,26 @@ module.exports = {
                 }
             }
 
-            const circular = util.detect_circular(destination);
-
-            if(circular.isCircular){
-                res.status(400).json({
-                    ok: false,
-                    messae: circular.reason,
-                });
-                return;
+            //update redis
+            if(slug || destination || status){
+                const prefix = req.user.alias+':';
+                if(status && status != 'ACTIVE'){
+                    //remove from redis
+                    const key = prefix+selected_slug;
+                    rc.DEL(key);
+                }
+                else if(slug && slug!=selected_slug){
+                    //remove from redis
+                    const key = prefix+selected_slug;
+                    rc.DEL(key);
+                }
+                else if(destination){
+                    //update redis
+                    const key = prefix+selected_slug;
+                    rc.HMSET(key, 'dest', destination);
+                }
             }
+
 
             const count = await models.link.update(update_obj, {
                 where: {
