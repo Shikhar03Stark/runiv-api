@@ -90,7 +90,10 @@ module.exports = {
             const links = await models.link.findAll({
                 where: {
                     owner: req.user.id,
-                }
+                },
+                order: [
+                    ['slug', 'ASC'],
+                ]
             });
 
             res.status(200).json({

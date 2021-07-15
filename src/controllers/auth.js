@@ -122,9 +122,19 @@ module.exports = {
             }
 
             const token = await util.issue_jwt(user);
+            const data = {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                alias: user.alias,
+                plan: user.plan,
+                banned: user.banned,
+                gender: user.gender,
+                dob: user.dob,
+            }
             res.status(200).json({
                 ok: true,
-                user: user,
+                user: data,
                 token,
             });
 
@@ -246,8 +256,70 @@ module.exports = {
                 }
             });
 
+            rc.SCAN(0, 'MATCH', `${req.user.alias}:*`, (err, data) => {
+                if(err){
+                    next({
+                        status: 500,
+                        messae: `Error connecting to redis`
+                    })
+                    return;
+                }
+                const keys = data[1];
+                if(keys.length > 0){
+                    rc.DEL(...keys);
+                }
+            });
+
             res.status(200).json({
                 ok: true,
+            });
+            
+        } catch (error) {
+            console.log(error);
+            next({
+                status: 500,
+                message: `Internal server error`,
+            })
+        }
+    },
+
+    view: async (req, res, next) => {
+        try {
+            const user = req.user;
+            const attached_link = await models.link.findAll({
+                where: {
+                    owner: user.id,
+                }
+            });
+            const total_links = attached_link.length;
+            let active_links = 0, disabled_links = 0;
+            attached_link.forEach(link => {
+                if(link.status == 'ACTIVE'){
+                    active_links++;
+                }
+                if(link.status == 'DISABLED'){
+                    disabled_links++;
+                }
+            });
+            const inactive_links = total_links - active_links - disabled_links;
+            const data = {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                alias: user.alias,
+                plan: user.plan,
+                banned: user.banned,
+                dob: user.dob,
+                created_at: user.created_at,
+                active_links: active_links,
+                inactive_links: inactive_links,
+                total_links: total_links,
+                links: attached_link,
+            }
+
+            res.status(200).json({
+                ok: true,
+                user: data,
             });
             
         } catch (error) {
