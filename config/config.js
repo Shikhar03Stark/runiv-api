@@ -6,6 +6,7 @@ module.exports = {
     database: "runiv_development",
     host: "127.0.0.1",
     dialect: "postgres",
+    seedStorage: "sequelize",
   },
 
   test: {

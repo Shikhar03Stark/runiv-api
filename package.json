@@ -5,8 +5,12 @@
   "main": "server.js",
   "scripts": {
     "test": "NODE_ENV=test mocha --recursive --exit",
-    "start": "NODE_ENV=production node server.js",
-    "dev": "npx nodemon server.js"
+    "start": "npm run migrate:all; NODE_ENV=production node server.js",
+    "dev": "npm run migrate:all; npm run seed:all; npx nodemon server.js",
+    "initdb": "npx sequelize-cli db:create",
+    "migrate:all": "npx sequelize-cli db:migrate",
+    "seed:all": "npx sequelize-cli db:seed:all",
+    "undo:seed": "npx sequelize-cli db:seed:undo:all"
   },
   "keywords": [
     "rest",
