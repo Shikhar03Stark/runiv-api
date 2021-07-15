@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "NODE_ENV=test mocha --recursive --exit",
-    "start": "npm run migrate:all; NODE_ENV=production node server.js",
+    "start": "npm run migrate:all; node server.js",
     "dev": "npm run migrate:all; npm run seed:all; npx nodemon server.js",
     "initdb": "npx sequelize-cli db:create",
     "migrate:all": "npx sequelize-cli db:migrate",
