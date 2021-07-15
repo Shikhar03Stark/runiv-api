@@ -62,6 +62,7 @@ module.exports = {
                 banned: new_user.banned,
                 gender: new_user.gender,
                 dob: new_user.dob,
+                status: new_user.status,
             }
 
             res.status(201).json({
@@ -131,6 +132,7 @@ module.exports = {
                 banned: user.banned,
                 gender: user.gender,
                 dob: user.dob,
+                status: user.status,
             }
             res.status(200).json({
                 ok: true,
@@ -310,6 +312,7 @@ module.exports = {
                 plan: user.plan,
                 banned: user.banned,
                 dob: user.dob,
+                status: user.status,
                 created_at: user.created_at,
                 active_links: active_links,
                 inactive_links: inactive_links,

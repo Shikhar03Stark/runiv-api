@@ -48,4 +48,9 @@ module.exports = db.sequelize.define('user', {
         type: db.dataTypes.DATEONLY,
         allowNull: true,
     },
+    status: {
+        type: db.dataTypes.ENUM('VERIFIED', 'PENDING', 'SUSPENDED'),
+        allowNull: false,
+        defaultValue: 'PENDING',
+    }
 })
