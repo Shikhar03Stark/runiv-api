@@ -9,6 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 //Apply Middleware
+app.set('trust proxy', true);
 app.use(cors());
 app.use(morgan('short'));
 app.use(express.json());
