@@ -37,7 +37,7 @@ module.exports = {
             }
         }
 
-        const is_reserved = reserved.alias.findIndex(alias);
+        const is_reserved = reserved.alias.findIndex(value => value == alias);
         if(is_reserved != -1){
             return {
                 valid: false,
@@ -75,7 +75,7 @@ module.exports = {
             }
         }
 
-        const is_reserved = reserved.slug.findIndex(slug);
+        const is_reserved = reserved.slug.findIndex(value => value == slug);
         if(is_reserved != -1){
             return {
                 valid: false,
