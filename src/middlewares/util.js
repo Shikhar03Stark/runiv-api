@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const reserved = require('../constants/reserved');
+
 module.exports = {
     issue_jwt: async (user) => {
         const id = user.id;
@@ -34,11 +36,18 @@ module.exports = {
                 reason: `Alias can only include number, english letters, hyphens. Must start with letter, end with letter or number`,
             }
         }
-        else{
+
+        const is_reserved = reserved.alias.findIndex(alias);
+        if(is_reserved != -1){
             return {
-                valid: true,
-                reason: null,
+                valid: false,
+                reason: `Alias can not be a reserved word. ${reserved.alias.join(' ')}`,
             }
+        }
+
+        return {
+            valid: true,
+            reason: null,
         }
     },
 
@@ -63,6 +72,14 @@ module.exports = {
             return{
                 valid: false,
                 reason: `Slug can only include letters, numbers and special characters -_*`
+            }
+        }
+
+        const is_reserved = reserved.slug.findIndex(slug);
+        if(is_reserved != -1){
+            return {
+                valid: false,
+                reason: `Slug can not be a reserved word. ${reserved.slug.join(' ')}`,
             }
         }
 
