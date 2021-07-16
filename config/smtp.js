@@ -16,6 +16,7 @@ module.exports = {
                         first_name: user.name,
                         verify_link: `https://api.runiv.in/v1/auth/verify?token=${hash}`,
                     },
+                    replyTo: 'runiv.helper@gmail.com',
                 });
             }
             else{
