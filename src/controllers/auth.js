@@ -48,7 +48,7 @@ module.exports = {
                 name,
                 email,
                 password: hashed_pass,
-                gender: gender || null,
+                gender: gender || 'UNDISCLOSED',
                 dob: dob || null,
                 token,
             };
