@@ -1,6 +1,7 @@
 const models = require('../database').model;
 const util = require('../middlewares/util');
 const rc = require('../database/redis');
+const faker = require('faker');
 
 module.exports = {
     signup: async (req, res, next) => {
@@ -41,6 +42,7 @@ module.exports = {
             }
             
             const hashed_pass = await util.hash_password(password);
+            const token = faker.random.alphaNumeric(120)+faker.random.alpha({count:8});
 
             const user_obj = {
                 name,
@@ -48,6 +50,7 @@ module.exports = {
                 password: hashed_pass,
                 gender: gender || null,
                 dob: dob || null,
+                token,
             };
 
             const new_user = await models.user.create(user_obj);
@@ -70,6 +73,15 @@ module.exports = {
                 user: data,
                 token: jwt_token,
             });
+
+            //send mail
+            if(process.env.NODE_ENV == 'production'){
+                const sgMail = require('../../config/smtp');
+                sgMail.verifyMail(email, user_obj, token)
+                    .then(() => console.log(`Mail sent successfully - ${email}`));
+            }
+
+
             return;
 
 
@@ -142,6 +154,40 @@ module.exports = {
 
             return;
             
+        } catch (error) {
+            console.log(error);
+            next({
+                status: 500,
+                message: `Internal server error`,
+            })
+        }
+    },
+
+    verify: async (req, res, next) => {
+        try {
+            let token = req.query.token;
+            token = token.trim();
+            const user = await models.user.findOne({
+                where: {
+                    token,
+                }
+            });
+            if(!user){
+                //redirect to http page
+                res.status(200).send(`Token Expired`);
+                return;
+            }
+            await user.update({
+                status: 'VERIFIED',
+                token: null,
+            }, {
+                where: {
+                    id: user.id,
+                }
+            });
+
+            //redirect to http page
+            res.status(200).send(`Account verified. OK`);
         } catch (error) {
             console.log(error);
             next({

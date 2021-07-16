@@ -4,6 +4,7 @@ const ctrl = require('../../controllers/auth');
 
 router.post('/signup', middleware.validate_university, ctrl.signup);
 router.post('/login', ctrl.login);
+router.get('/verify', ctrl.verify);
 
 router.use(middleware.verify_jwt);
 router.put('/update', ctrl.update);
