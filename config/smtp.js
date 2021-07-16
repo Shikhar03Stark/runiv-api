@@ -14,7 +14,7 @@ module.exports = {
                     templateId: 'd-a0358da784e6404ab74627ea514c8064',
                     dynamicTemplateData: {
                         first_name: user.name,
-                        verify_link: `https://api.runiv.in/auth/verify?token=${hash}`,
+                        verify_link: `https://api.runiv.in/v1/auth/verify?token=${hash}`,
                     },
                 });
             }
