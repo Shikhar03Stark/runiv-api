@@ -4,7 +4,7 @@ const reserved = require('../constants/reserved');
 
 module.exports = {
     issue_jwt: async (user) => {
-        const id = user.id;
+        const id = {id:user.id};
         const token = jwt.sign(id, process.env.RUNIV_SECRET);
         return token;
     },

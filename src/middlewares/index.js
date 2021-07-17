@@ -16,7 +16,7 @@ module.exports = {
             }
             else{
                 const token = bearer_token.substr('Bearer '.length);
-                const id = jwt.verify(token, process.env.RUNIV_SECRET);
+                const id = jwt.verify(token, process.env.RUNIV_SECRET).id;
                 const user = await User.findByPk(id);
                 if(!user){
                     next({

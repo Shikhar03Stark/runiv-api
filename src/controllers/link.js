@@ -112,19 +112,19 @@ module.exports = {
 
     details: async (req, res, next) => {
         try {
-            const slug = req.params.slug;
-            const valid = util.validate_slug(slug);
-            if(!valid.valid){
+            const slug_id = req.params.slug_id;
+            if(!slug_id){
                 res.status(400).json({
                     ok: false,
-                    message: valid.reason,
+                    message: `Slug.id not provided`,
                 });
+                return;
             }
 
             const detailed_link = await models.link.findOne({
                 where: {
                     owner: req.user.id,
-                    slug,
+                    id: slug_id,
                 },
                 include: {
                     model: models.metric,
@@ -156,21 +156,21 @@ module.exports = {
 
     get_metrics: async (req, res, next) => {
         try {
-            const slug = req.params.slug;
-            const valid = util.validate_slug(slug);
-            if(!valid.valid){
+            const slug_id = req.params.slug_id;
+            if(!slug_id){
                 res.status(400).json({
                     ok: false,
-                    message: valid.reason,
+                    messae: `Slug.id not provided`,
                 });
+                return;
             }
 
             const detailed_link = await models.link.findOne({
                 where: {
                     owner: req.user.id,
-                    slug,
+                    id: slug_id,
                 },
-                attributes: ['owner', 'updated_at', 'redirects'],
+                attributes: ['slug', 'owner', 'updated_at', 'redirects'],
                 include: {
                     model: models.metric,
                     attributes: ['timestamps', 'created_at', 'updated_at']
@@ -187,7 +187,7 @@ module.exports = {
 
             const response = {
                 owner_id: detailed_link.owner,
-                slug,
+                slug: detailed_link.slug,
                 timestamps: detailed_link.metric.timestamps,
                 redirects: detailed_link.redirects,
                 last_access: detailed_link.metric.getDataValue('updated_at'),
@@ -207,7 +207,15 @@ module.exports = {
 
     update: async (req, res, next) => {
         try {
-            const selected_slug = req.params.slug;
+            const slug_id = req.params.slug_id;
+
+            if(!slug_id){
+                res.status(400).json({
+                    ok: false,
+                    messae: `Slug.id not provided`,
+                });
+                return;
+            }
 
             const slug = req.body.slug;
             const destination = req.body.destination;
@@ -260,30 +268,49 @@ module.exports = {
                 }
             }
 
+            const prev_slug = await models.link.findOne({
+                where: {
+                    owner: req.user.id,
+                    id: slug_id,
+                }
+            });
+
+            if(!prev_slug){
+                res.status(400).json({
+                    ok: false,
+                    message: `Link not found`,
+                });
+                return;
+            }
+
             //update redis
             if(slug || destination || status){
                 const prefix = req.user.alias+':';
                 if(status && status != 'ACTIVE'){
                     //remove from redis
-                    const key = prefix+selected_slug;
+                    const key = prefix+prev_slug.slug;
                     rc.DEL(key);
                 }
-                else if(slug && slug!=selected_slug){
+                else if(slug){
                     //remove from redis
-                    const key = prefix+selected_slug;
+                    const key = prefix+prev_slug.slug;
                     rc.DEL(key);
                 }
                 else if(destination){
                     //update redis
-                    const key = prefix+selected_slug;
-                    rc.HMSET(key, 'dest', destination);
+                    const key = prefix+prev_slug.slug;
+                    rc.HEXISTS(key, 'dest', (err, reply) => {
+                        if(reply == 1){
+                            rc.HMSET(key, 'dest', destination);
+                        }
+                    });
                 }
             }
 
 
             const count = await models.link.update(update_obj, {
                 where: {
-                    slug: selected_slug,
+                    id: slug_id,
                     owner: req.user.id,
                 }
             });
@@ -296,7 +323,7 @@ module.exports = {
             else{
                 res.status(400).json({
                     ok:false,
-                    message: `link not found`,
+                    message: `No Updates`,
                 })
             }
 
