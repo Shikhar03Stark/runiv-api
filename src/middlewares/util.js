@@ -22,7 +22,7 @@ module.exports = {
     },
 
     validate_alias: (alias) => {
-        if(alias.lenght < 3 || alias.length > 14){
+        if(alias.length < 3 || alias.length > 14){
             return {
                 valid: false,
                 reason: `Alias length must be between 3 to 14`,
