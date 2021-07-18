@@ -231,6 +231,20 @@ module.exports = {
                     });
                     return;
                 }
+
+                const exist_slug = await models.link.findOne({
+                    where: {
+                        slug: slug,
+                        owner: req.user.id,
+                    }
+                });
+                if(exist_slug){
+                    res.status(400).json({
+                        ok: false,
+                        messae: `Slug already exists with same name`,
+                    });
+                    return;
+                }
                 update_obj.slug = slug;
             }
 
