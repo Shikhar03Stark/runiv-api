@@ -5,6 +5,27 @@ const User = require('../database/models/User');
 module.exports = {
     util,
 
+    check_slug_id: async (req, res, next) => {
+        try {
+            const slug_id = req.params.slug_id;
+            const re = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
+            if(!re.test(slug_id)){
+                next({
+                    status: 400, 
+                    message: `Invalid, UUIDv4 provided`,
+                });
+                return;
+            }
+            next();
+
+        } catch (error) {
+            next({
+                status: error.status || 500,
+                message: error.message || 'Internal server error',
+            });
+        }
+    },
+
     verify_jwt: async (req, res, next) => {
         try {
             const bearer_token = req.get('Authorization');

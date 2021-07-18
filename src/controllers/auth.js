@@ -42,6 +42,7 @@ module.exports = {
             }
             
             const hashed_pass = await util.hash_password(password);
+            faker.seed(Date.now());
             const token = faker.random.alphaNumeric(120)+faker.random.alpha({count:8});
 
             const user_obj = {
@@ -267,7 +268,10 @@ module.exports = {
                 });
             }
             else{
-
+                res.status(200).json({
+                    ok: true,
+                    message: `No Changes`,
+                });
             }
             
         } catch (error) {

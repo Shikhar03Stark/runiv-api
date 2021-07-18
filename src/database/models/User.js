@@ -27,7 +27,9 @@ module.exports = db.sequelize.define('user', {
     alias: {
         type: db.dataTypes.STRING,
         allowNull: false,
-        defaultValue: `${faker.hacker.adjective().replace(' ', '-')}-${faker.name.firstName().toLowerCase()}-${faker.random.alphaNumeric(4)}`
+        defaultValue: () => {
+            faker.seed(Date.now());
+            return `${faker.hacker.adjective().replace(' ', '-').substr(0,4)}-${faker.name.firstName().toLowerCase().substr(0,4)}-${faker.random.alphaNumeric(4)}`},
     },
     plan: {
         type: db.dataTypes.ENUM('BASIC', 'PRO', 'CUSTOM'),

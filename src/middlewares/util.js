@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const reserved = require('../constants/reserved');
+const validator = require('validator').default;
+
 
 module.exports = {
     issue_jwt: async (user) => {
@@ -104,8 +106,10 @@ module.exports = {
             }
         }
 
-        const re = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
-        const match = re.test(url);
+        const match = validator.isURL(url);
+
+        //const re = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
+        //const match = re.test(url);
         if(!match){
             return {
                 valid: false,
