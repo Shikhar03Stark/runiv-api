@@ -212,7 +212,7 @@ module.exports = {
             if(!slug_id){
                 res.status(400).json({
                     ok: false,
-                    messae: `Slug.id not provided`,
+                    message: `Slug.id not provided`,
                 });
                 return;
             }
@@ -231,7 +231,7 @@ module.exports = {
                     });
                     return;
                 }
-
+                /*
                 const exist_slug = await models.link.findOne({
                     where: {
                         slug: slug,
@@ -241,10 +241,10 @@ module.exports = {
                 if(exist_slug){
                     res.status(400).json({
                         ok: false,
-                        messae: `Slug already exists with same name`,
+                        message: `Slug already exists with same name`,
                     });
                     return;
-                }
+                }*/
                 update_obj.slug = slug;
             }
 
