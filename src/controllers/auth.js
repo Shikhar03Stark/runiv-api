@@ -243,7 +243,7 @@ module.exports = {
                     if(err){
                         next({
                             status: 500,
-                            messae: `Error connecting to redis`
+                            message: `Error connecting to redis`
                         })
                         return;
                     }
@@ -297,7 +297,7 @@ module.exports = {
             if(id != req.user.id){
                 res.status(403).json({
                     ok: false,
-                    messae: `user id doesn't match with current session`,
+                    message: `user id doesn't match with current session`,
                 });
                 return ;
             }
@@ -312,7 +312,7 @@ module.exports = {
                 if(err){
                     next({
                         status: 500,
-                        messae: `Error connecting to redis`
+                        message: `Error connecting to redis`
                     })
                     return;
                 }

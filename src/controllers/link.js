@@ -52,7 +52,7 @@ module.exports = {
             if(circular.isCircular){
                 res.status(400).json({
                     ok: false,
-                    messae: circular.reason,
+                    message: circular.reason,
                 });
                 return;
             }
@@ -160,7 +160,7 @@ module.exports = {
             if(!slug_id){
                 res.status(400).json({
                     ok: false,
-                    messae: `Slug.id not provided`,
+                    message: `Slug.id not provided`,
                 });
                 return;
             }
@@ -263,7 +263,7 @@ module.exports = {
                 if(circular.isCircular){
                     res.status(400).json({
                         ok: false,
-                        messae: circular.reason,
+                        message: circular.reason,
                     });
                     return;
                 }
@@ -366,7 +366,7 @@ module.exports = {
             if(!link || id != link.id || link.owner != req.user.id){
                 res.status(403).json({
                     ok: false,
-                    messae: `link doesn't exists`,
+                    message: `link doesn't exists`,
                 });
                 return ;
             }
