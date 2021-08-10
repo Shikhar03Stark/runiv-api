@@ -140,9 +140,33 @@ module.exports = {
                 return;
             }
 
+            //fetch redirects from redis
+            const r_redir = await (() => {
+                return new Promise((resolve, reject) => {
+                    const prefix = req.user.alias + ':';
+                    const slug = detailed_link.slug;
+                    const key = prefix+slug;
+
+                    rc.HMGET(key, 'redir', (err, data) => {
+                        if(err){
+                            return reject(err);
+                        }
+                        else{
+                            return resolve(data[0]);
+                        }
+                    })
+                });
+            })();
+
+            //overwrite redirects
+            let redis_detailed = Object.assign(detailed_link, {
+                redirects: r_redir,
+            });
+
+
             res.status(200).json({
                 ok: true,
-                link: detailed_link,
+                link: redis_detailed,
             })
             
         } catch (error) {
@@ -185,11 +209,29 @@ module.exports = {
                 return;
             }
 
+            //fetch redirects from redis
+            const r_redir = await (() => {
+                return new Promise((resolve, reject) => {
+                    const prefix = req.user.alias + ':';
+                    const slug = detailed_link.slug;
+                    const key = prefix+slug;
+
+                    rc.HMGET(key, 'redir', (err, data) => {
+                        if(err){
+                            return reject(err);
+                        }
+                        else{
+                            return resolve(data[0]);
+                        }
+                    })
+                });
+            })();
+
             const response = {
                 owner_id: detailed_link.owner,
                 slug: detailed_link.slug,
                 timestamps: detailed_link.metric.timestamps,
-                redirects: detailed_link.redirects,
+                redirects: r_redir,
                 last_access: detailed_link.metric.getDataValue('updated_at'),
             };
 
