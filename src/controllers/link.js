@@ -160,7 +160,7 @@ module.exports = {
 
             //overwrite redirects
             let redis_detailed = Object.assign(detailed_link, {
-                redirects: r_redir,
+                redirects: r_redir || detailed_link.redirects,
             });
 
 
@@ -231,7 +231,7 @@ module.exports = {
                 owner_id: detailed_link.owner,
                 slug: detailed_link.slug,
                 timestamps: detailed_link.metric.timestamps,
-                redirects: r_redir,
+                redirects: r_redir || detailed_link.redirects,
                 last_access: detailed_link.metric.getDataValue('updated_at'),
             };
 
