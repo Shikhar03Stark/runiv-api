@@ -413,6 +413,11 @@ module.exports = {
                 return ;
             }
 
+            //update redis
+            const prefix = req.user.alias+':';
+            const key = prefix+link.slug;
+            rc.DEL(key, (err, reply) => {});
+
             await models.link.destroy({
                 where: {
                     id: id,
