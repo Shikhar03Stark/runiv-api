@@ -26,4 +26,26 @@ module.exports = {
             console.log(error);
         }
     },
+    resetMail: async (to, user, token) => {
+        try {
+            const re = /\S+@\S+\.\S+/;
+            if (re.test(to)){
+                await sgMail.send({
+                    from: 'support@runiv.in',
+                    to: to,
+                    templateId: 'd-665eda26fa624a8a9b5f847d4616449c',
+                    dynamicTemplateData: {
+                        first_name: user.name,
+                        token: token,
+                    },
+                    //replyTo: 'runiv.helper@gmail.com',
+                });
+            }
+            else{
+                console.log(`Invalid Email address. Mail not sent`);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 }
