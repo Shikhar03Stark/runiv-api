@@ -7,11 +7,11 @@ const smtp = require('../../config/smtp');
 module.exports = {
     signup: async (req, res, next) => {
         try {
-            const name = req.body.name;
-            const email = req.body.email;
-            const password = req.body.password;
-            const gender = req.body.gender;
-            const dob = req.body.dob;
+            let name = req.body.name;
+            let email = req.body.email;
+            let password = req.body.password;
+            let gender = req.body.gender;
+            let dob = req.body.dob;
 
             if(!name || !email || !password){
                 res.status(400).json({
@@ -24,6 +24,9 @@ module.exports = {
                 });
                 return;
             }
+
+            name = name.toString().trim()
+            email = email.toString().trim()
 
             const user = await models.user.findOne({
                 where: {
@@ -98,8 +101,8 @@ module.exports = {
 
     login: async (req, res, next) => {
         try {
-            const email = req.body.email;
-            const password = req.body.password;
+            let email = req.body.email;
+            let password = req.body.password;
 
             if(!email || !password){
                 res.status(401).json({
@@ -111,6 +114,8 @@ module.exports = {
                 });
                 return;
             }
+
+            email = email.toString().trim()
 
             const user = await models.user.findOne({
                 where:{
@@ -201,9 +206,9 @@ module.exports = {
 
     update: async (req, res, next) => {
         try {
-            const name = req.body.name;
-            const gender = req.body.gender;
-            const dob = req.body.dob;
+            let name = req.body.name;
+            let gender = req.body.gender;
+            let dob = req.body.dob;
             let alias = req.body.alias;
             if(name && name.length == 0){
                 res.status(400).json({
@@ -212,6 +217,9 @@ module.exports = {
                 });
                 return;
             }
+
+            name = name.toString().trim()
+
             if(alias){
                 alias = alias.toLowerCase();
                 const valid = util.validate_alias(alias);
@@ -222,7 +230,10 @@ module.exports = {
                     });
                     return;
                 }
+                alias = alias.toString().trim()
             }
+
+
 
             const new_obj = {};
             if(alias && alias != req.user.alias){
@@ -387,7 +398,7 @@ module.exports = {
 
     recovery_discover: async (req, res, next) => {
         try {
-            const email = req.body.email;
+            let email = req.body.email;
 
             if(!email){
                 res.status(403).json({
@@ -396,6 +407,8 @@ module.exports = {
                 });
                 return;
             }
+
+            email = email.toString().trim()
 
             const user = await models.user.findOne({
                 where: {
